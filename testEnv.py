@@ -12,16 +12,28 @@ print(obs)
 
 while(True):
 
-    dx, dy, distance = obs
+    dx, dy, distance, time_until = obs
+
+    max_movement = (
+            env.cursor_speed * env.dt / 1000
+            )
 
     if distance > 0:
         move_x = dx / distance
         move_y = dy / distance
     else:
-        move_x = 0
-        move_y = 0
+        move_x = dx / max_movement
+        move_y = dy / max_movement
 
-    click = 1.0 if distance <= env.hit_radius else 0.0
+
+
+    click = 0.0
+
+    if (
+            distance <= env.hit_radius
+            and abs(time_until) <= env.hit_window
+    ):
+        click = 1.0
 
     action = np.array([
         move_x,
