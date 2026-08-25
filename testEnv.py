@@ -1,29 +1,56 @@
 from osuEnv import osuAimEnv
+import numpy as np
 
-env = osuAimEnv()
+env = osuAimEnv(render_mode = "human")
+termined = False
 
 
-obs, info = env.reset(seed=42)
+obs, info = env.reset(seed=41)
 
 print("Starting obsverations:")
 print(obs)
 
+while(True):
 
-for step in range(10):
+    dx, dy, distance = obs
+
+    if distance > 0:
+        move_x = dx / distance
+        move_y = dy / distance
+    else:
+        move_x = 0
+        move_y = 0
+
+    click = 1.0 if distance <= env.hit_radius else 0.0
+
+    action = np.array([
+        move_x,
+        move_y,
+        click
+        ], dtype=np.float32)
     
-    action = env.action_space.sample()
-
     obs, reward, terminated, truncated, info = env.step(
-            action
-            )
-
-    print()
-    print("Step: ", step)
-    print("Action:", action)
-    print("Observation:", obs)
-    print("Reward:", reward)
-    print("Distance:", info["distance"])
+        action
+    )
 
     if terminated or truncated:
-        print("Episode finished.")
         break
+
+
+    print(
+        "Step:",
+        env.curr_step,
+        "Reward:",
+        reward,
+        "Distance:",
+        info["distance"],
+        "terminated",
+        terminated,
+        "truncated",
+        truncated,
+        "target:",
+        info["target_index"],
+    )
+
+
+env.close()
