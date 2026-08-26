@@ -14,17 +14,30 @@ while(True):
 
     dx, dy, distance, time_until = obs
 
-    max_movement = (
-            env.cursor_speed * env.dt / 1000
-            )
+    move_x = 0.0
+    move_y = 0.0
 
-    if distance > 0:
+    if distance > 0 and time_until > 0:
+
+        time_until_s = time_until / 1000
+
+        required_speed = distance / time_until_s
+
+        speed_frac = required_speed / env.cursor_speed
+
+        speed_frac = np.clip(
+                speed_frac,
+                0.0,
+                1.0
+                )
+
+        move_x = (dx / distance) * speed_frac
+        move_y = (dy / distance) * speed_frac
+
+    else:
+
         move_x = dx / distance
         move_y = dy / distance
-    else:
-        move_x = dx / max_movement
-        move_y = dy / max_movement
-
 
 
     click = 0.0
