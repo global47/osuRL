@@ -5,7 +5,7 @@ env = osuAimEnv(render_mode = "human")
 termined = False
 
 
-obs, info = env.reset(seed=41)
+obs, info = env.reset(seed=42)
 
 print("Starting obsverations:")
 print(obs)

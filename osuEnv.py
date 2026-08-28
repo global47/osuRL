@@ -25,7 +25,11 @@ class osuAimEnv(gym.Env):
 
         self.targets = np.empty((0,2), dtype=np.float32)
         self.target_times = np.empty(0, dtype=np.float32)
+        self.target_interval = 800.0
+
         
+        self.max_jump_distance = 300.0
+        self.jump_difficulty = 0.5
 
         self.render_mode = render_mode
 
@@ -79,29 +83,18 @@ class osuAimEnv(gym.Env):
              self.np_random.uniform(0, self.width),
              self.np_random.uniform(0, self.height)
              ], dtype=np.float32)
-   
-        self.targets = np.column_stack((
-            self.np_random.uniform(
-                0,
-                self.width,
-                size = self.num_targets
-                ),
-            self.np_random.uniform(
-                0,
-                self.height,
-                size = self.num_targets
-                )
-            )).astype(np.float32)
-
-
-        self.target = self.targets[self.current_target_i]
 
         self.target_times = np.arange(
                 1000,
-                1000 + self.num_targets * 800,
-                800,
+                1000 + self.num_targets * self.target_interval,
+                self.target_interval,
                 dtype = np.float32
                 )
+
+
+        self.targets = self._generate_targets()
+        
+        self.target = self.targets[self.current_target_i]
 
         observation = self._get_obs()
 
@@ -332,3 +325,75 @@ class osuAimEnv(gym.Env):
             pygame.quit()
             self.window = None
             self.clock = None
+
+
+    def _generate_targets(self):
+
+        targets = np.zeros(
+                (self.num_targets, 2),
+                dtype = np.float32
+                )
+
+        targets[0] = np.array([
+            self.np_random.uniform(0, self.width),
+            self.np_random.uniform(0,self.height)
+            ], dtype = np.float32)
+
+        for i in range(1, self.num_targets):
+
+            previous = targets[i - 1]
+
+            time_difference = (
+                    self.target_times[i]
+                    - self.target_times[i - 1]
+                    )
+
+            available_seconds = (
+                    time_difference / 1000.0
+                    )
+
+            reachable_distance = (
+                    self.cursor_speed * available_seconds
+                    )
+
+            allowed_distance = min(
+                    self.max_jump_distance,
+                    reachable_distance
+                    * self.jump_difficulty
+                    )
+
+            min_jump = min(
+                    50,
+                    allowed_distance
+                    )
+            
+            
+            while(True):
+                
+                angle = self.np_random.uniform(
+                    0,
+                    2 * np.pi
+                )
+
+                jump_distance = self.np_random.uniform(
+                    min_jump,
+                    allowed_distance
+                )
+
+                candidate = previous + np.array([
+                    np.cos(angle) * jump_distance,
+                    np.sin(angle) * jump_distance
+                    ])
+
+                x, y = candidate
+
+                if(
+                        0 <= x <= self.width
+                        and
+                        0 <= y <= self.height
+                        ):
+                    targets[i] = candidate
+                    break
+
+        return targets
+
