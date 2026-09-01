@@ -1,3 +1,4 @@
+import argparse
 import numpy as np
 
 
@@ -9,9 +10,7 @@ def load_hit_circles(filepath):
     in_hit_objects = False
 
     with open(filepath, "r", encoding="utf-8-sig") as file:
-
         for line in file:
-
             line = line.strip()
 
             if line == "[HitObjects]":
@@ -31,12 +30,47 @@ def load_hit_circles(filepath):
             time = int(parts[2])
             object_type = int(parts[3])
 
-            # We'll add filtering here shortly
+            # Only include hit circles
+            if object_type & 1:
+                positions.append([x, y])
+                times.append(time)
 
-            positions.append([x, y])
-            times.append(time)
+    return (np.array(positions, dtype=np.float32), np.array(times, dtype=np.float32))
 
-    return (
-        np.array(positions, dtype=np.float32),
-        np.array(times, dtype=np.float32)
+
+def main():
+
+    parser = argparse.ArgumentParser(description="osu! RL beatmap parser")
+
+    parser.add_argument(
+        "osuFile",
+        nargs="?",
+        default="FUNKIST - Snow fairy (TV Size) (Yumerios) [Easy].osu",
+        help="Path to an .osu file",
     )
+
+    args = parser.parse_args()
+
+    positions, times = load_hit_circles(args.osuFile)
+
+    print("File:", args.osuFile)
+    print("Number of circles:", len(positions))
+    print()
+
+    print(f"Clrcle 0: position={positions[0]}, time={times[0]:.0f} ms")
+
+    for i in range(1, len(times)):
+        previousPos = positions[i - 1]
+        previousTime = times[i - 1]
+
+        diffPos = positions[i] - previousPos
+        diffTime = times[i] - previousTime
+        jump_distance = np.linalg.norm(diffPos)
+
+        print(
+            f"Circle {i}: position={positions[i]}, time={times[i]:.0f} ms | Positional difference={jump_distance}, Temporal Difference ={diffTime:.0f} ms"
+        )
+
+
+if __name__ == "__main__":
+    main()
