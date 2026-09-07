@@ -1,12 +1,19 @@
 import argparse
+from dataclasses import dataclass
 import numpy as np
+
+
+@dataclass
+class HitObject:
+    x: float
+    y: float
+    time: float
+    object_type: int
 
 
 def load_hit_circles(filepath):
 
-    positions = []
-    times = []
-
+    hit_objects = []
     in_hit_objects = False
 
     with open(filepath, "r", encoding="utf-8-sig") as file:
@@ -32,10 +39,10 @@ def load_hit_circles(filepath):
 
             # Only include hit circles
             if object_type & 1:
-                positions.append([x, y])
-                times.append(time)
-
-    return (np.array(positions, dtype=np.float32), np.array(times, dtype=np.float32))
+                hit_objects.append(
+                    HitObject(x=x, y=y, time=time, object_type=object_type)
+                )
+    return hit_objects
 
 
 def main():

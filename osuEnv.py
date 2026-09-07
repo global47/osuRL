@@ -17,6 +17,9 @@ class osuAimEnv(gym.Env):
         self.cursor_speed = 1200
         self.hit_radius = 30
 
+        self.hit_objects = []
+        self.current_object = []
+
         self.curr_step = 0
 
         self.cursor = np.zeros(2, dtype=np.float32)
@@ -73,8 +76,11 @@ class osuAimEnv(gym.Env):
         )
 
         if self.beatmap_path is not None:
-            self.targets, self.target_times = load_hit_circles(self.beatmap_path)
-            self.num_targets = len(self.targets)
+            self.hit_objects = load_hit_circles(self.beatmap_path)
+
+            self.current_object = self.hit_objects[self.current_target_i]
+
+            self.num_targets = len(self.hit_objects)
 
             first_time = self.target_times[0]
 
