@@ -18,7 +18,7 @@ class osuAimEnv(gym.Env):
         self.hit_radius = 30
 
         self.hit_objects = []
-        self.current_object = []
+        self.current_object = None
 
         self.curr_step = 0
 
@@ -36,7 +36,6 @@ class osuAimEnv(gym.Env):
         self.jump_difficulty = 0.5
 
         self.render_mode = render_mode
-
         self.window = None
         self.clock = None
 
@@ -78,13 +77,23 @@ class osuAimEnv(gym.Env):
         if self.beatmap_path is not None:
             self.hit_objects = load_hit_circles(self.beatmap_path)
 
+            if len(self.hit_objects) == 0:
+                raise ValueError(
+                "Beatmap contains no hit circles."
+                )
+
+            first_time = self.hit_objects[0].time
+
+            for obj in self.hit_objects:
+                obj.time = (
+                        obj.time
+                        - first_time
+                        + 1000.0
+                        )
+
             self.current_object = self.hit_objects[self.current_target_i]
 
             self.num_targets = len(self.hit_objects)
-
-            first_time = self.target_times[0]
-
-            self.target_times = self.target_times - first_time + 1000.0
 
         else:
             self.target_times = np.arange(
@@ -96,7 +105,8 @@ class osuAimEnv(gym.Env):
 
             self.targets = self._generate_targets()
 
-        self.target = self.targets[self.current_target_i]
+            self.target = self.targets[self.current_target_i]
+
 
         observation = self._get_obs()
 
@@ -110,13 +120,15 @@ class osuAimEnv(gym.Env):
 
         return observation, info
 
+
+
     def step(self, action):
 
         self.curr_step += 1
 
         self.current_time += self.dt
 
-        target_time = self.target_times[self.current_target_i]
+        target_time = self.current_object.time
 
         timing_err = abs(self.current_time - target_time)
 
@@ -140,13 +152,20 @@ class osuAimEnv(gym.Env):
 
         self.cursor[1] = np.clip(self.cursor[1], 0, self.height)
 
-        distance = np.linalg.norm(self.cursor - self.target)
+        target_pos = np.array([
+            self.current_object.x,
+            self.current_object.y
+            ], dtype=np.float32)
+
+
+        distance = np.linalg.norm(self.cursor - target_pos)
 
         inside_circle = distance <= self.hit_radius
 
         # rewards!
         reward = 0.0
         terminated = False
+        truncated = False
 
         if clicked:
             if inside_circle and inside_timing_window:
@@ -157,18 +176,15 @@ class osuAimEnv(gym.Env):
                 if self.current_target_i >= self.num_targets:
                     terminated = True
                 else:
-                    self.target = self.targets[self.current_target_i]
+                    self.current_object = self.hit_objects[self.current_target_i]
             else:
                 reward = -1.0
 
-        truncated = self.current_target_i >= self.num_targets
-
-        observation = self._get_obs()
 
         if (
             not terminated
             and self.current_time
-            > self.target_times[self.current_target_i] + self.hit_window
+            > self.current_object.time + self.hit_window
         ):
             reward = -1.0
 
@@ -177,12 +193,30 @@ class osuAimEnv(gym.Env):
             if self.current_target_i >= self.num_targets:
                 terminated = True
             else:
-                self.target = self.targets[self.current_target_i]
+                self.current_object = self.hit_objects[self.current_target_i]
 
-        new_distance = (
-            np.linalg.norm(self.cursor - self.target) if not terminated else 0.0
-        )
 
+        if not terminated:
+            
+            observation = self._get_obs()
+
+            current_target_pos = np.array([
+                self.current_object.x,
+                self.current_object.y
+                ], dtype=np.float32)
+
+            new_distance = np.linalg.norm(
+                    self.cursor - current_target_pos
+                    )
+        else:
+            observation = np.zeros(
+                    self.observation_space.shape,
+                    dtype=np.float32,
+                    )
+
+            new_distance = 0.0
+
+        
         info = {
             "distance": new_distance,
             "target_index": self.current_target_i,
@@ -191,7 +225,7 @@ class osuAimEnv(gym.Env):
 
         if not terminated:
             info["time_until_target"] = (
-                self.target_times[self.current_target_i] - self.current_time
+                self.current_object.time - self.current_time
             )
 
         if self.render_mode == "human":
@@ -200,17 +234,20 @@ class osuAimEnv(gym.Env):
         return (observation, reward, terminated, truncated, info)
 
     def _get_obs(self):
-        dx = self.target[0] - self.cursor[0]
-        dy = self.target[1] - self.cursor[1]
+        target_pos = np.array([
+            self.current_object.x,
+            self.current_object.y
+            ], dtype=np.float32)
+
+
+        dx = target_pos[0] - self.cursor[0]
+        dy = target_pos[1] - self.cursor[1]
 
         distance = np.hypot(dx, dy)
 
-        if self.current_target_i < self.num_targets:
-            time_to_target = (
-                self.target_times[self.current_target_i] - self.current_time
+        time_to_target = (
+                self.current_object.time - self.current_time
             )
-        else:
-            time_to_target = 0.0
 
         return np.array([dx, dy, distance, time_to_target], dtype=np.float32)
 
@@ -227,7 +264,7 @@ class osuAimEnv(gym.Env):
             self.clock = pygame.time.Clock()
 
         if self.current_target_i < self.num_targets:
-            time_until = self.target_times[self.current_target_i] - self.current_time
+            time_until = self.current_object.time - self.current_time
 
             pygame.display.set_caption(
                 f"osu! RL | Time: {self.current_time:.0f} ms "
@@ -242,9 +279,14 @@ class osuAimEnv(gym.Env):
         # background
         self.window.fill((20, 20, 20))
 
+        target_pos = (
+            int(self.current_object.x),
+            int(self.current_object.y)
+        )
+
         # draw target
         pygame.draw.circle(
-            self.window, (200, 100, 150), self.target.astype(int), self.hit_radius
+            self.window, (200, 100, 150), target_pos, self.hit_radius
         )
 
         # draw cursor
@@ -252,7 +294,7 @@ class osuAimEnv(gym.Env):
 
         pygame.display.flip()
 
-        self.clock.tick(30)
+        self.clock.tick(60)
 
     def close(self):
 
