@@ -3,3 +3,6 @@ __pycache__
 bin
 lib
 include
+.venv/
+.pytest_cache/
+*.pyc

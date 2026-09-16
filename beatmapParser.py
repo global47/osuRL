@@ -1,6 +1,7 @@
 import argparse
 from dataclasses import dataclass
-import numpy as np
+from math import hypot
+from pathlib import Path
 
 
 @dataclass
@@ -12,6 +13,7 @@ class HitObject:
 
 
 def load_hit_circles(filepath):
+    """Read circle objects in file order, preserving their original timestamps."""
 
     hit_objects = []
     in_hit_objects = False
@@ -24,10 +26,14 @@ def load_hit_circles(filepath):
                 in_hit_objects = True
                 continue
 
+            if line.startswith("["):
+                in_hit_objects = False
+                continue
+
             if not in_hit_objects:
                 continue
 
-            if not line:
+            if not line or line.startswith("//"):
                 continue
 
             parts = line.split(",")
@@ -46,36 +52,44 @@ def load_hit_circles(filepath):
 
 
 def main():
-
     parser = argparse.ArgumentParser(description="osu! RL beatmap parser")
 
     parser.add_argument(
         "osuFile",
         nargs="?",
-        default="FUNKIST - Snow fairy (TV Size) (Yumerios) [Easy].osu",
+        default=Path(__file__).with_name(
+            "FUNKIST - Snow fairy (TV Size) (Yumerios) [Easy].osu"
+        ),
         help="Path to an .osu file",
     )
 
     args = parser.parse_args()
 
-    positions, times = load_hit_circles(args.osuFile)
+    hit_objects = load_hit_circles(args.osuFile)
 
     print("File:", args.osuFile)
-    print("Number of circles:", len(positions))
+    print("Number of circles:", len(hit_objects))
     print()
 
-    print(f"Clrcle 0: position={positions[0]}, time={times[0]:.0f} ms")
+    if not hit_objects:
+        return
 
-    for i in range(1, len(times)):
-        previousPos = positions[i - 1]
-        previousTime = times[i - 1]
+    print(
+        f"Circle 0: position=({hit_objects[0].x}, {hit_objects[0].y}), "
+        f"time={hit_objects[0].time:.0f} ms"
+    )
 
-        diffPos = positions[i] - previousPos
-        diffTime = times[i] - previousTime
-        jump_distance = np.linalg.norm(diffPos)
+    for i in range(1, len(hit_objects)):
+        previous = hit_objects[i - 1]
+        current = hit_objects[i]
+
+        diff_time = current.time - previous.time
+        jump_distance = hypot(current.x - previous.x, current.y - previous.y)
 
         print(
-            f"Circle {i}: position={positions[i]}, time={times[i]:.0f} ms | Positional difference={jump_distance}, Temporal Difference ={diffTime:.0f} ms"
+            f"Circle {i}: position=({current.x}, {current.y}), "
+            f"time={current.time:.0f} ms | Positional difference={jump_distance}, "
+            f"Temporal Difference={diff_time:.0f} ms"
         )
 
 
