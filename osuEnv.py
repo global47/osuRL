@@ -11,7 +11,7 @@ class osuAimEnv(gym.Env):
 
     metadata = {"render_modes": ["human"], "render_fps": 60}
 
-    def __init__(self, render_mode=None, beatmap_path=None, num_targets=10, start_on_target=False,):
+    def __init__(self, render_mode=None, beatmap_path=None, num_targets=10, start_on_target=False, bad_click_penalty=1.0,):
         super().__init__()
 
         if render_mode not in (None, "human"):
@@ -55,6 +55,11 @@ class osuAimEnv(gym.Env):
         self.hits = 0
         self.misses = 0
         self.bad_clicks = 0
+
+        if not np.isfinite(bad_click_penalty) or bad_click_penalty < 0:
+            raise ValueError("bad_click_penalty must be finite and nonnegative.")
+        
+        self.bad_click_penalty = float(bad_click_penalty)
 
         self.observation_space = spaces.Box(
             low=np.array([-512, -384, 0, -np.inf], dtype=np.float32),
@@ -107,23 +112,50 @@ class osuAimEnv(gym.Env):
                 first_object.y,
                 ], dtype=np.float32)
 
-        if options is not None and "first_target_time" in options:
-            first_target_time = float(options["first_target_time"])
+        if options is not None:
 
-            if not np.isfinite(first_target_time) or first_target_time <= 0:
-                raise ValueError("first target time must be finite and positive.")
+            if "first_target_time" in options:
+                first_target_time = float(options["first_target_time"])
 
-            time_shift = first_target_time - self.hit_objects[0].time
+                if not np.isfinite(first_target_time) or first_target_time <= 0:
+                    raise ValueError("first target time must be finite and positive.")
 
-            self.hit_objects = [
-                    HitObject(
-                        x=obj.x,
-                        y=obj.y,
-                        time=obj.time + time_shift,
-                        object_type = obj.object_type,
-                        )
-                    for obj in self.hit_objects
-                    ]
+                time_shift = first_target_time - self.hit_objects[0].time
+
+                self.hit_objects = [
+                        HitObject(
+                            x=obj.x,
+                            y=obj.y,
+                            time=obj.time + time_shift,
+                            object_type = obj.object_type,
+                            )
+                        for obj in self.hit_objects
+                        ]
+
+            if "start_distance" in options:
+                start_distance = float(options["start_distance"])
+
+                if not np.isfinite(start_distance) or not 0 <= start_distance <= 100:
+                    raise ValueError("start_distance must be between 0 and 100")
+
+                first_object = self.hit_objects[0]
+                target_pos = np.array([
+                    first_object.x, first_object.y
+                    ], dtype=np.float32)
+
+                while True:
+                    angle = self.np_random.uniform(0,2*np.pi)
+                    offset = start_distance * np.array([
+                        np.cos(angle), np.sin(angle)
+                        ], dtype=np.float32)
+                    candidate = target_pos + offset
+
+                    if (
+                            0 <= candidate[0] <= self.width
+                            and 0 <= candidate[1] <= self.height
+                            ):
+                        self.cursor = candidate.astype(np.float32)
+                        break
 
         observation = self._get_obs()
         info = {}
@@ -168,7 +200,7 @@ class osuAimEnv(gym.Env):
             reward = -1.0
             self.current_target_i += 1
         elif clicked:
-            reward = -1.0
+            reward = -self.bad_click_penalty
 
 
                

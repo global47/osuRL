@@ -39,3 +39,16 @@ class TimingOnlyAction(gym.ActionWrapper):
     def action(self, action):
         click = float(action[0])
         return np.array([0.0, 0.0, click], dtype=np.float32)
+
+class NearbyStart(gym.Wrapper):
+    def __init__(self, env, distance=45.0):
+        super().__init__(env)
+        self.distance = distance
+
+    def reset(self, *, seed=None, options=None):
+        reset_options = {"start_distance": self.distance}
+
+        if options is not None:
+            reset_options.update(options)
+
+        return self.env.reset(seed=seed, options=reset_options)
