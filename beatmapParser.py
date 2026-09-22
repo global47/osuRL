@@ -11,6 +11,55 @@ class HitObject:
     time: float
     object_type: int
 
+@dataclass
+class BeatmapDifficulty:
+    hp: float
+    cs: float
+    od: float
+    ar: float
+
+def load_difficulty(filepath):
+    hp = cs = od = ar = None
+    in_difficulty = False
+
+    with open(filepath, "r", encoding="utf-8-sig") as file:
+        for line in file:
+            line = line.strip()
+
+            if not line or line.startswith("//"):
+                continue
+
+            if line.startswith("["):
+                in_difficulty = line == "[Difficulty]"
+                continue
+
+            if not in_difficulty:
+                continue
+
+            key, separator, value = line.partition(":")
+            if not separator:
+                continue
+
+            key = key.strip()
+            value = value.strip()
+
+            if key == "HPDrainRate":
+                hp = float(value)
+            elif key == "CircleSize":
+                cs = float(value)
+            elif key == "OverallDifficulty":
+                od = float(value)
+            elif key == "ApproachRate":
+                ar = float(value)
+
+    if hp is None or cs is None or od is None:
+        raise ValueError("Beatmap is missing HPDrainRate, CircleSize, or OverallDifficulty.")
+
+    if ar is None:
+        ar = od
+
+    return BeatmapDifficulty(hp=hp, cs=cs, od=od, ar=ar)
+
 
 def load_hit_circles(filepath):
     """Read circle objects in file order, preserving their original timestamps."""
@@ -65,9 +114,15 @@ def main():
 
     args = parser.parse_args()
 
+    difficulty = load_difficulty(args.osuFile)
+
     hit_objects = load_hit_circles(args.osuFile)
 
     print("File:", args.osuFile)
+    print(
+        f"Difficulty: HP={difficulty.hp}, CS={difficulty.cs}, "
+        f"OD={difficulty.od}, AR={difficulty.ar}"
+    )
     print("Number of circles:", len(hit_objects))
     print()
 

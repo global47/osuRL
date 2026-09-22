@@ -10,7 +10,7 @@ from osuEnv import osuAimEnv
 
 def aim_action(observation, env):
     """Move toward the circle and click within its timing window."""
-    dx, dy, distance, time_until = observation
+    dx, dy, distance, time_until, button_held = observation
     movement = np.zeros(2, dtype=np.float32)
     if distance > 0:
         speed_fraction = 1.0
@@ -21,7 +21,7 @@ def aim_action(observation, env):
         movement = np.array([dx, dy], dtype=np.float32) / distance * speed_fraction
 
     click = float(
-        distance <= env.hit_radius and abs(time_until) <= env.hit_window
+        distance <= env.hit_radius and abs(time_until) <= env.hit_window_300 and not bool(button_held)
     )
     return np.array([*movement, click], dtype=np.float32)
 

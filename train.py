@@ -8,7 +8,7 @@ from wrappers import NormalizeObservation, TimingOnlyAction, NearbyStart
 
 
 def main():
-    output_dir = Path(__file__).parent / "runs" / "ppo_nearby_45_soft_click"
+    output_dir = Path(__file__).parent / "runs" / "ppo_circle_accuracy_v2"
     output_dir.mkdir(parents=True, exist_ok=True)
 
     env = Monitor(
@@ -23,20 +23,14 @@ def main():
 
     print("Action shape:", env.action_space.shape)
     print("Starting distance:", observation[2] * 640)
+    print("Observation shape:", env.observation_space.shape)
 
     try:
-        model = PPO(
-            "MlpPolicy",
-            env,
-            learning_rate=3e-4,
-            n_steps=2048,
-            batch_size=64,
-            verbose=1,
-            seed=42,
-            device="cpu",
-        )
+        checkpoint = Path(__file__).parent / "runs" / "ppo_circle_accuracy_v1" / "model.zip"
 
-        model.learn(total_timesteps=100_000)
+        model = PPO.load(checkpoint, env=env, device="cpu")
+
+        model.learn(total_timesteps=100_000, reset_num_timesteps=False)
         model.save(output_dir / "model")
     finally:
         env.close()

@@ -3,7 +3,7 @@ from gymnasium import spaces
 import numpy as np
 import pygame
 
-from beatmapParser import HitObject, load_hit_circles
+from beatmapParser import HitObject, load_hit_circles, load_difficulty, BeatmapDifficulty
 
 
 class osuAimEnv(gym.Env):
@@ -11,7 +11,7 @@ class osuAimEnv(gym.Env):
 
     metadata = {"render_modes": ["human"], "render_fps": 60}
 
-    def __init__(self, render_mode=None, beatmap_path=None, num_targets=10, start_on_target=False, bad_click_penalty=1.0,):
+    def __init__(self, render_mode=None, beatmap_path=None, num_targets=10, start_on_target=False, bad_click_penalty=1.0, sim_hz=60,):
         super().__init__()
 
         if render_mode not in (None, "human"):
@@ -27,7 +27,20 @@ class osuAimEnv(gym.Env):
         self.cursor_speed = 1200
         self.cursor = np.zeros(2, dtype=np.float32)
 
-        self.hit_radius = 30
+        if beatmap_path is not None:
+            self.difficulty = load_difficulty(beatmap_path)
+        else:
+            self.difficulty = BeatmapDifficulty(hp=3.0, cs=4.2, od=6.0, ar=8.0)
+
+        self.hit_radius = (54.4 - 4.48 * self.difficulty.cs) * 1.00041
+
+
+        od = self.difficulty.od
+
+        self.hit_window_300 = 80.0 - 6.0 * od
+        self.hit_window_100 = 140.0 - 8.0 * od
+        self.hit_window_50 = 200.0 - 10.0 * od
+
         self.hit_objects = []
 
         self.curr_step = 0
@@ -46,15 +59,20 @@ class osuAimEnv(gym.Env):
         self.render_mode = render_mode
         self.window = None
         self.clock = None
-        self.fps = self.metadata["render_fps"]
 
-        self.dt = 1000.0 / self.fps
         self.current_time = 0.0
-        self.hit_window = 100.0
+
+        if not np.isfinite(sim_hz) or sim_hz <= 0:
+            raise ValueError("sim_hz must be finite and positive.")
+        
+        self.sim_hz = float(sim_hz)
+        self.dt = 1000.0 / self.sim_hz
+        self.fps = self.metadata["render_fps"]
 
         self.hits = 0
         self.misses = 0
         self.bad_clicks = 0
+        self.button_held = False
 
         if not np.isfinite(bad_click_penalty) or bad_click_penalty < 0:
             raise ValueError("bad_click_penalty must be finite and nonnegative.")
@@ -62,8 +80,8 @@ class osuAimEnv(gym.Env):
         self.bad_click_penalty = float(bad_click_penalty)
 
         self.observation_space = spaces.Box(
-            low=np.array([-512, -384, 0, -np.inf], dtype=np.float32),
-            high=np.array([512, 384, 640, np.inf], dtype=np.float32),
+            low=np.array([-512, -384, 0, -np.inf, 0], dtype=np.float32),
+            high=np.array([512, 384, 640, np.inf, 1], dtype=np.float32),
             dtype=np.float32,
         )
 
@@ -85,9 +103,11 @@ class osuAimEnv(gym.Env):
         self.curr_step = 0
         self.current_time = 0.0
 
+        self.button_held = False
         self.hits = 0
         self.misses = 0
         self.bad_clicks = 0
+        self.judgement_counts = {300: 0, 100: 0, 50: 0, 0: 0}
 
         self.cursor = np.array(
             [
@@ -178,29 +198,38 @@ class osuAimEnv(gym.Env):
         ).astype(np.float32)
 
         observation = self._get_obs()
-        inside_circle = observation[2] <= self.hit_radius
-        inside_timing_window = (
-            abs(self.current_time - current_object.time) <= self.hit_window
-        )
-        clicked = action[2] > 0.5
+        inside_circle = observation[2] <= self.hit_radius     
 
-        successful_hit = clicked and inside_circle and inside_timing_window
-        expired = self.current_time > current_object.time + self.hit_window
+        timing_error = self.current_time - current_object.time
+        timing_judgement = self._judge_timing(timing_error)
 
-        if clicked and not successful_hit:
+        button_held = bool(action[2] > 0.5)
+        pressed = button_held and not self.button_held
+        self.button_held = button_held
+
+        successful_hit = pressed and inside_circle and timing_judgement is not None
+        expired = timing_error > self.hit_window_50
+
+        if pressed and not successful_hit:
             self.bad_clicks += 1
 
+        judgement = None
         reward = 0.0
         if successful_hit:
+            judgement = timing_judgement
             self.hits += 1
-            reward = 1.0
+            reward = judgement / 300.0
             self.current_target_i += 1
         elif expired:
+            judgement = 0
             self.misses += 1
             reward = -1.0
             self.current_target_i += 1
-        elif clicked:
+        elif pressed:
             reward = -self.bad_click_penalty
+
+        if judgement is not None:
+            self.judgement_counts[judgement] += 1
 
 
                
@@ -215,6 +244,8 @@ class osuAimEnv(gym.Env):
             "hits": self.hits,
             "misses": self.misses,
             "bad_clicks": self.bad_clicks,
+            "judgement": judgement,
+            "judgement_counts": self.judgement_counts.copy()
         }
         if not terminated:
             info["time_until_target"] = self.current_object.time - self.current_time
@@ -231,7 +262,7 @@ class osuAimEnv(gym.Env):
         dy = current_object.y - self.cursor[1]
         distance = np.hypot(dx, dy)
         time_to_target = current_object.time - self.current_time
-        return np.array([dx, dy, distance, time_to_target], dtype=np.float32)
+        return np.array([dx, dy, distance, time_to_target, float(self.button_held)], dtype=np.float32)
 
     def render(self):
         if self.render_mode != "human":
@@ -264,7 +295,7 @@ class osuAimEnv(gym.Env):
         # draw cursor
         pygame.draw.circle(self.window, (255, 255, 255), self.cursor.astype(int), 6)
         pygame.display.flip()
-        self.clock.tick(self.fps)
+        self.clock.tick(self.sim_hz)
 
     def close(self):
         if self.window is not None:
@@ -322,3 +353,15 @@ class osuAimEnv(gym.Env):
             )
             for obj in hit_objects
         ]
+
+    def _judge_timing(self, timing_error):
+        error = abs(timing_error)
+
+        if error <= self.hit_window_300:
+            return 300
+        elif error <= self.hit_window_100:
+            return 100
+        elif error <= self.hit_window_50:
+            return 50
+
+        return None

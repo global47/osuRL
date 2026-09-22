@@ -10,7 +10,7 @@ class NormalizeObservation(gym.ObservationWrapper):
         base_env = env.unwrapped
 
         self.scale = np.array(
-            [base_env.width, base_env.height, np.hypot(base_env.width, base_env.height), 1000.0],
+            [base_env.width, base_env.height, np.hypot(base_env.width, base_env.height), 1000.0, 1.0],
             dtype=np.float32,
         )
 
