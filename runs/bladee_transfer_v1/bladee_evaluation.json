@@ -1,0 +1,203 @@
+{
+  "interface_version": "mixed-v3",
+  "targets": 3400,
+  "hits": 1540,
+  "misses": 1860,
+  "bad_clicks": 120,
+  "hit_rate": 0.45294117647058824,
+  "bad_clicks_per_episode": 6.0,
+  "mean_reward": -21.6,
+  "accuracy": 0.4235294117647059,
+  "judgement_counts": {
+    "300": 1400,
+    "100": 100,
+    "50": 40,
+    "0": 1860
+  },
+  "by_type": {
+    "circle": {
+      "hits": 1540,
+      "misses": 40,
+      "hit_rate": 0.9746835443037974
+    },
+    "slider": {
+      "hits": 0,
+      "misses": 1820,
+      "hit_rate": 0.0
+    },
+    "spinner": {
+      "hits": 0,
+      "misses": 0,
+      "hit_rate": null
+    }
+  },
+  "episodes": [
+    {
+      "seed": 20000,
+      "targets": 170,
+      "hits": 77,
+      "misses": 93,
+      "bad_clicks": 6,
+      "reward": -21.599999999999998
+    },
+    {
+      "seed": 20001,
+      "targets": 170,
+      "hits": 77,
+      "misses": 93,
+      "bad_clicks": 6,
+      "reward": -21.599999999999998
+    },
+    {
+      "seed": 20002,
+      "targets": 170,
+      "hits": 77,
+      "misses": 93,
+      "bad_clicks": 6,
+      "reward": -21.599999999999998
+    },
+    {
+      "seed": 20003,
+      "targets": 170,
+      "hits": 77,
+      "misses": 93,
+      "bad_clicks": 6,
+      "reward": -21.599999999999998
+    },
+    {
+      "seed": 20004,
+      "targets": 170,
+      "hits": 77,
+      "misses": 93,
+      "bad_clicks": 6,
+      "reward": -21.599999999999998
+    },
+    {
+      "seed": 20005,
+      "targets": 170,
+      "hits": 77,
+      "misses": 93,
+      "bad_clicks": 6,
+      "reward": -21.599999999999998
+    },
+    {
+      "seed": 20006,
+      "targets": 170,
+      "hits": 77,
+      "misses": 93,
+      "bad_clicks": 6,
+      "reward": -21.599999999999998
+    },
+    {
+      "seed": 20007,
+      "targets": 170,
+      "hits": 77,
+      "misses": 93,
+      "bad_clicks": 6,
+      "reward": -21.599999999999998
+    },
+    {
+      "seed": 20008,
+      "targets": 170,
+      "hits": 77,
+      "misses": 93,
+      "bad_clicks": 6,
+      "reward": -21.599999999999998
+    },
+    {
+      "seed": 20009,
+      "targets": 170,
+      "hits": 77,
+      "misses": 93,
+      "bad_clicks": 6,
+      "reward": -21.599999999999998
+    },
+    {
+      "seed": 20010,
+      "targets": 170,
+      "hits": 77,
+      "misses": 93,
+      "bad_clicks": 6,
+      "reward": -21.599999999999998
+    },
+    {
+      "seed": 20011,
+      "targets": 170,
+      "hits": 77,
+      "misses": 93,
+      "bad_clicks": 6,
+      "reward": -21.599999999999998
+    },
+    {
+      "seed": 20012,
+      "targets": 170,
+      "hits": 77,
+      "misses": 93,
+      "bad_clicks": 6,
+      "reward": -21.599999999999998
+    },
+    {
+      "seed": 20013,
+      "targets": 170,
+      "hits": 77,
+      "misses": 93,
+      "bad_clicks": 6,
+      "reward": -21.599999999999998
+    },
+    {
+      "seed": 20014,
+      "targets": 170,
+      "hits": 77,
+      "misses": 93,
+      "bad_clicks": 6,
+      "reward": -21.599999999999998
+    },
+    {
+      "seed": 20015,
+      "targets": 170,
+      "hits": 77,
+      "misses": 93,
+      "bad_clicks": 6,
+      "reward": -21.599999999999998
+    },
+    {
+      "seed": 20016,
+      "targets": 170,
+      "hits": 77,
+      "misses": 93,
+      "bad_clicks": 6,
+      "reward": -21.599999999999998
+    },
+    {
+      "seed": 20017,
+      "targets": 170,
+      "hits": 77,
+      "misses": 93,
+      "bad_clicks": 6,
+      "reward": -21.599999999999998
+    },
+    {
+      "seed": 20018,
+      "targets": 170,
+      "hits": 77,
+      "misses": 93,
+      "bad_clicks": 6,
+      "reward": -21.599999999999998
+    },
+    {
+      "seed": 20019,
+      "targets": 170,
+      "hits": 77,
+      "misses": 93,
+      "bad_clicks": 6,
+      "reward": -21.599999999999998
+    }
+  ],
+  "policy": "runs/bladee_transfer_v1/model.zip",
+  "configuration": {
+    "mode": "mixed",
+    "beatmap": "Bladee - Hero of my story 3style3 (Vanchanical) [Normal].osu",
+    "sim_hz": 60.0,
+    "num_targets": 170
+  }
+}

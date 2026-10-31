@@ -1,0 +1,17 @@
+{
+  "mode": "circles",
+  "beatmap": null,
+  "num_targets": 1,
+  "sim_hz": 60,
+  "timesteps": 256,
+  "n_steps": 256,
+  "batch_size": 64,
+  "seed": 42,
+  "eval_seed": 10000,
+  "eval_episodes": 2,
+  "start_distance": 45,
+  "bad_click_penalty": 0.1,
+  "output": "/Users/romanchauhan/Documents/osuRL/runs/circles_v1_cli_smoke",
+  "interface_version": "circles-v1",
+  "evaluation_start": "unrestricted; independent scenario seeds, no nearby-start wrapper"
+}

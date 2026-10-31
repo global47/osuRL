@@ -14,6 +14,10 @@ class NormalizeObservation(gym.ObservationWrapper):
             dtype=np.float32,
         )
 
+        if base_env.object_mode == "mixed":
+            self.scale = np.concatenate((self.scale, np.array(
+                [1, 1, 1, 1000, 1, 1, 1, 1, 1, 1, 640, 512, 384, 1], dtype=np.float32)))
+
         self.observation_space = spaces.Box(
             low=env.observation_space.low / self.scale,
             high=env.observation_space.high / self.scale,

@@ -1,0 +1,17 @@
+{
+  "mode": "mixed",
+  "beatmap": "/Users/romanchauhan/Documents/osuRL/Bladee - Hero of my story 3style3 (Vanchanical) [Normal].osu",
+  "num_targets": 1,
+  "sim_hz": 60,
+  "timesteps": 1000000,
+  "n_steps": 2048,
+  "batch_size": 64,
+  "seed": 42,
+  "eval_seed": 10000,
+  "eval_episodes": 20,
+  "start_distance": 45,
+  "bad_click_penalty": 0.1,
+  "output": "/Users/romanchauhan/Documents/osuRL/runs/bladee_transfer_v1",
+  "interface_version": "mixed-v3",
+  "evaluation_start": "unrestricted; independent scenario seeds, no nearby-start wrapper"
+}

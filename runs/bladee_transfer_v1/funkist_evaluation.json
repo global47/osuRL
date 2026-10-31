@@ -1,0 +1,203 @@
+{
+  "interface_version": "mixed-v3",
+  "targets": 2120,
+  "hits": 840,
+  "misses": 1280,
+  "bad_clicks": 360,
+  "hit_rate": 0.39622641509433965,
+  "bad_clicks_per_episode": 18.0,
+  "mean_reward": -25.133333333333344,
+  "accuracy": 0.3836477987421384,
+  "judgement_counts": {
+    "300": 800,
+    "100": 40,
+    "50": 0,
+    "0": 1280
+  },
+  "by_type": {
+    "circle": {
+      "hits": 840,
+      "misses": 0,
+      "hit_rate": 1.0
+    },
+    "slider": {
+      "hits": 0,
+      "misses": 1260,
+      "hit_rate": 0.0
+    },
+    "spinner": {
+      "hits": 0,
+      "misses": 20,
+      "hit_rate": 0.0
+    }
+  },
+  "episodes": [
+    {
+      "seed": 20000,
+      "targets": 106,
+      "hits": 42,
+      "misses": 64,
+      "bad_clicks": 18,
+      "reward": -25.133333333333347
+    },
+    {
+      "seed": 20001,
+      "targets": 106,
+      "hits": 42,
+      "misses": 64,
+      "bad_clicks": 18,
+      "reward": -25.133333333333347
+    },
+    {
+      "seed": 20002,
+      "targets": 106,
+      "hits": 42,
+      "misses": 64,
+      "bad_clicks": 18,
+      "reward": -25.133333333333347
+    },
+    {
+      "seed": 20003,
+      "targets": 106,
+      "hits": 42,
+      "misses": 64,
+      "bad_clicks": 18,
+      "reward": -25.133333333333347
+    },
+    {
+      "seed": 20004,
+      "targets": 106,
+      "hits": 42,
+      "misses": 64,
+      "bad_clicks": 18,
+      "reward": -25.133333333333347
+    },
+    {
+      "seed": 20005,
+      "targets": 106,
+      "hits": 42,
+      "misses": 64,
+      "bad_clicks": 18,
+      "reward": -25.133333333333347
+    },
+    {
+      "seed": 20006,
+      "targets": 106,
+      "hits": 42,
+      "misses": 64,
+      "bad_clicks": 18,
+      "reward": -25.133333333333347
+    },
+    {
+      "seed": 20007,
+      "targets": 106,
+      "hits": 42,
+      "misses": 64,
+      "bad_clicks": 18,
+      "reward": -25.133333333333347
+    },
+    {
+      "seed": 20008,
+      "targets": 106,
+      "hits": 42,
+      "misses": 64,
+      "bad_clicks": 18,
+      "reward": -25.133333333333347
+    },
+    {
+      "seed": 20009,
+      "targets": 106,
+      "hits": 42,
+      "misses": 64,
+      "bad_clicks": 18,
+      "reward": -25.133333333333347
+    },
+    {
+      "seed": 20010,
+      "targets": 106,
+      "hits": 42,
+      "misses": 64,
+      "bad_clicks": 18,
+      "reward": -25.133333333333347
+    },
+    {
+      "seed": 20011,
+      "targets": 106,
+      "hits": 42,
+      "misses": 64,
+      "bad_clicks": 18,
+      "reward": -25.133333333333347
+    },
+    {
+      "seed": 20012,
+      "targets": 106,
+      "hits": 42,
+      "misses": 64,
+      "bad_clicks": 18,
+      "reward": -25.133333333333347
+    },
+    {
+      "seed": 20013,
+      "targets": 106,
+      "hits": 42,
+      "misses": 64,
+      "bad_clicks": 18,
+      "reward": -25.133333333333347
+    },
+    {
+      "seed": 20014,
+      "targets": 106,
+      "hits": 42,
+      "misses": 64,
+      "bad_clicks": 18,
+      "reward": -25.133333333333347
+    },
+    {
+      "seed": 20015,
+      "targets": 106,
+      "hits": 42,
+      "misses": 64,
+      "bad_clicks": 18,
+      "reward": -25.133333333333347
+    },
+    {
+      "seed": 20016,
+      "targets": 106,
+      "hits": 42,
+      "misses": 64,
+      "bad_clicks": 18,
+      "reward": -25.133333333333347
+    },
+    {
+      "seed": 20017,
+      "targets": 106,
+      "hits": 42,
+      "misses": 64,
+      "bad_clicks": 18,
+      "reward": -25.133333333333347
+    },
+    {
+      "seed": 20018,
+      "targets": 106,
+      "hits": 42,
+      "misses": 64,
+      "bad_clicks": 18,
+      "reward": -25.133333333333347
+    },
+    {
+      "seed": 20019,
+      "targets": 106,
+      "hits": 42,
+      "misses": 64,
+      "bad_clicks": 18,
+      "reward": -25.133333333333347
+    }
+  ],
+  "policy": "runs/bladee_transfer_v1/model.zip",
+  "configuration": {
+    "mode": "mixed",
+    "beatmap": "FUNKIST - Snow fairy (TV Size) (Yumerios) [Easy].osu",
+    "sim_hz": 60.0,
+    "num_targets": 106
+  }
+}

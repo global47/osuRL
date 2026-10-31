@@ -1,0 +1,197 @@
+{
+  "interface_version": "mixed-v3",
+  "targets": 3400,
+  "hits": 1540,
+  "misses": 1860,
+  "bad_clicks": 120,
+  "hit_rate": 0.45294117647058824,
+  "bad_clicks_per_episode": 6.0,
+  "mean_reward": -21.6,
+  "accuracy": 0.4235294117647059,
+  "judgement_counts": {
+    "300": 1400,
+    "100": 100,
+    "50": 40,
+    "0": 1860
+  },
+  "by_type": {
+    "circle": {
+      "hits": 1540,
+      "misses": 40,
+      "hit_rate": 0.9746835443037974
+    },
+    "slider": {
+      "hits": 0,
+      "misses": 1820,
+      "hit_rate": 0.0
+    },
+    "spinner": {
+      "hits": 0,
+      "misses": 0,
+      "hit_rate": null
+    }
+  },
+  "episodes": [
+    {
+      "seed": 10000,
+      "targets": 170,
+      "hits": 77,
+      "misses": 93,
+      "bad_clicks": 6,
+      "reward": -21.599999999999998
+    },
+    {
+      "seed": 10001,
+      "targets": 170,
+      "hits": 77,
+      "misses": 93,
+      "bad_clicks": 6,
+      "reward": -21.599999999999998
+    },
+    {
+      "seed": 10002,
+      "targets": 170,
+      "hits": 77,
+      "misses": 93,
+      "bad_clicks": 6,
+      "reward": -21.599999999999998
+    },
+    {
+      "seed": 10003,
+      "targets": 170,
+      "hits": 77,
+      "misses": 93,
+      "bad_clicks": 6,
+      "reward": -21.599999999999998
+    },
+    {
+      "seed": 10004,
+      "targets": 170,
+      "hits": 77,
+      "misses": 93,
+      "bad_clicks": 6,
+      "reward": -21.599999999999998
+    },
+    {
+      "seed": 10005,
+      "targets": 170,
+      "hits": 77,
+      "misses": 93,
+      "bad_clicks": 6,
+      "reward": -21.599999999999998
+    },
+    {
+      "seed": 10006,
+      "targets": 170,
+      "hits": 77,
+      "misses": 93,
+      "bad_clicks": 6,
+      "reward": -21.599999999999998
+    },
+    {
+      "seed": 10007,
+      "targets": 170,
+      "hits": 77,
+      "misses": 93,
+      "bad_clicks": 6,
+      "reward": -21.599999999999998
+    },
+    {
+      "seed": 10008,
+      "targets": 170,
+      "hits": 77,
+      "misses": 93,
+      "bad_clicks": 6,
+      "reward": -21.599999999999998
+    },
+    {
+      "seed": 10009,
+      "targets": 170,
+      "hits": 77,
+      "misses": 93,
+      "bad_clicks": 6,
+      "reward": -21.599999999999998
+    },
+    {
+      "seed": 10010,
+      "targets": 170,
+      "hits": 77,
+      "misses": 93,
+      "bad_clicks": 6,
+      "reward": -21.599999999999998
+    },
+    {
+      "seed": 10011,
+      "targets": 170,
+      "hits": 77,
+      "misses": 93,
+      "bad_clicks": 6,
+      "reward": -21.599999999999998
+    },
+    {
+      "seed": 10012,
+      "targets": 170,
+      "hits": 77,
+      "misses": 93,
+      "bad_clicks": 6,
+      "reward": -21.599999999999998
+    },
+    {
+      "seed": 10013,
+      "targets": 170,
+      "hits": 77,
+      "misses": 93,
+      "bad_clicks": 6,
+      "reward": -21.599999999999998
+    },
+    {
+      "seed": 10014,
+      "targets": 170,
+      "hits": 77,
+      "misses": 93,
+      "bad_clicks": 6,
+      "reward": -21.599999999999998
+    },
+    {
+      "seed": 10015,
+      "targets": 170,
+      "hits": 77,
+      "misses": 93,
+      "bad_clicks": 6,
+      "reward": -21.599999999999998
+    },
+    {
+      "seed": 10016,
+      "targets": 170,
+      "hits": 77,
+      "misses": 93,
+      "bad_clicks": 6,
+      "reward": -21.599999999999998
+    },
+    {
+      "seed": 10017,
+      "targets": 170,
+      "hits": 77,
+      "misses": 93,
+      "bad_clicks": 6,
+      "reward": -21.599999999999998
+    },
+    {
+      "seed": 10018,
+      "targets": 170,
+      "hits": 77,
+      "misses": 93,
+      "bad_clicks": 6,
+      "reward": -21.599999999999998
+    },
+    {
+      "seed": 10019,
+      "targets": 170,
+      "hits": 77,
+      "misses": 93,
+      "bad_clicks": 6,
+      "reward": -21.599999999999998
+    }
+  ],
+  "training_timesteps": 1001472
+}

@@ -6,6 +6,7 @@ from pathlib import Path
 import numpy as np
 
 from osuEnv import osuAimEnv
+from policies import scripted_action
 
 
 def aim_action(observation, env):
@@ -36,6 +37,7 @@ def main():
             "FUNKIST - Snow fairy (TV Size) (Yumerios) [Easy].osu"
         ),
     )
+    parser.add_argument("--mixed", action="store_true", help="Use mixed-v3; requires a supported map or --synthetic")
     parser.add_argument("--synthetic", action="store_true")
     parser.add_argument("--headless", action="store_true")
     args = parser.parse_args()
@@ -43,14 +45,15 @@ def main():
     env = osuAimEnv(
         render_mode=None if args.headless else "human",
         beatmap_path=None if args.synthetic else args.beatmap,
-        num_targets=1
+        object_mode="mixed" if args.mixed else "circles",
+        num_targets=9 if args.mixed else 1
     )
     try:
         observation, _ = env.reset(seed=42)
         total_reward = 0.0
         while True:
             observation, reward, terminated, truncated, info = env.step(
-                aim_action(observation, env)
+                (scripted_action if args.mixed else aim_action)(observation, env)
             )
             total_reward += reward
             if terminated or truncated:
