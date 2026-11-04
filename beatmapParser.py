@@ -39,7 +39,7 @@ class HitObject:
         return self.time + self.duration
 
     def position_at(self, time):
-        """Distance-based slider position, including repeats and the final endpoint."""
+        #Distance based slider position, including repeats and the final endpoint.
         if self.kind != "slider":
             return self.x, self.y
         progress = min(max((time - self.time) / self.duration, 0.0), 1.0) * self.spans
@@ -154,11 +154,9 @@ def _sections(filepath):
 
 
 def load_hit_objects(filepath):
-    """Standard-mode subset: circles, L/P/B/C sliders, spinners.
-
-    Unknown curves, out-of-playfield heads and malformed data raise errors.
-    Lifetimes are validated by the environment using its circle timing window.
-    """
+    #Standard-mode subset: circles, L/P/B/C sliders, spinners.
+    #Unknown curves, out-of-playfield heads and malformed data raise errors.
+    #Lifetimes are validated by the environment using its circle timing window.
     sections = _sections(filepath)
     general = dict(tuple(part.strip() for part in line.split(":", 1)) for line in sections.get("[General]", []) if ":" in line)
     if int(general.get("Mode", "0")) != 0:

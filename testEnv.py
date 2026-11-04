@@ -1,4 +1,4 @@
-"""Run a simple aiming policy for visual debugging."""
+#Run a simple aiming policy for visual debugging.
 
 import argparse
 from pathlib import Path
@@ -10,7 +10,7 @@ from policies import scripted_action
 
 
 def aim_action(observation, env):
-    """Move toward the circle and click within its timing window."""
+    # Move toward the circle and click within its timing window.
     dx, dy, distance, time_until, button_held = observation
     movement = np.zeros(2, dtype=np.float32)
     if distance > 0:

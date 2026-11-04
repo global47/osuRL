@@ -1,4 +1,4 @@
-"""Scripted mechanics baseline; uses simulator state, not a learned policy."""
+# this is a scripted policy that will always perform the optimal action.
 import numpy as np
 
 
